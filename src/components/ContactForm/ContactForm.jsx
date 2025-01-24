@@ -1,13 +1,11 @@
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
-import { addContact } from '../../redux/contactsSlice';
-import { nanoid } from 'nanoid';
-import './ContactForm.css'
+import { useDispatch } from 'react-redux';
+import { addContact } from '../../redux/contactsOps';
+import "./ContactForm.css"
 
-const ContactsForm = () => {
+const ContactForm = () => {
   const dispatch = useDispatch();
-  const contacts = useSelector(state => state.contacts.items);
 
   const formik = useFormik({
     initialValues: {
@@ -15,61 +13,40 @@ const ContactsForm = () => {
       number: '',
     },
     validationSchema: Yup.object({
-     name: Yup.string()
-    .min(3, "Must be at least 3 letters")
-    .max(50, "Must be 50 letters or less")
-    .required("Name is required"),
-  number: Yup.string()
-    .matches(/^\d{3}-\d{2}-\d{2}$/, "Number must be in format XXX-XX-XX")
-    .required("Number is required"),
+      name: Yup.string().required('Required'),
+      number: Yup.string().matches(/^\d+$/, 'Invalid phone number').required('Required'),
     }),
     onSubmit: (values, { resetForm }) => {
-      const isDuplicate = contacts.some(contact => contact.name === values.name);
-
-      if (isDuplicate) {
-        alert(`${values.name} is already in contacts.`);
-        return;
-      }
-
-      dispatch(addContact({ id: nanoid(), name: values.name, number: values.number }));
+      dispatch(addContact(values));
       resetForm();
     },
   });
 
   return (
     <form className='contact-form' onSubmit={formik.handleSubmit}>
-      <label className='lab-con' htmlFor="name">Name</label>
-      <input
+      <input 
         className='in-con'
-        id="name"
-        name="name"
-        type="text"
+        type="text" 
+        name="name" 
         value={formik.values.name}
         onChange={formik.handleChange}
-        onBlur={formik.handleBlur}
+        placeholder="Name"
       />
-      {formik.touched.name && formik.errors.name ? (
-        <div style={{ color: 'red' }}>{formik.errors.name}</div>
-      ) : null}
+      {formik.errors.name && <p>{formik.errors.name}</p>}
 
-      <label className='lab-con' htmlFor="number">Number</label>
-      <input
+      <input 
         className='in-con'
-        id="number"
-        name="number"
-        type="text"
+        type="text" 
+        name="number" 
         value={formik.values.number}
         onChange={formik.handleChange}
-        onBlur={formik.handleBlur}
+        placeholder="Number"
       />
-      {formik.touched.number && formik.errors.number ? (
-        <div style={{ color: 'red' }}>{formik.errors.number}</div>
-      ) : null}
+      {formik.errors.number && <p>{formik.errors.number}</p>}
 
       <button type="submit">Add Contact</button>
-      </form>
-    
+    </form>
   );
 };
 
-export default ContactsForm;
+export default ContactForm;

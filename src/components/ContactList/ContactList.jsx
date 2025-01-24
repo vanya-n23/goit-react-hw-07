@@ -1,21 +1,32 @@
-import Contact from "../Contact/Contact";
+import  { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectFilteredContacts } from '../../redux/contactsSlice';
+import { fetchContacts, deleteContact } from '../../redux/contactsOps';
 import "./ContactList.css"
-import { useSelector } from 'react-redux';
 
 const ContactList = () => {
-  const contacts = useSelector(state => state.contacts.items);
-  const filter = useSelector(state => state.filters.name.toLowerCase());
+  const dispatch = useDispatch();
+  const contacts = useSelector(selectFilteredContacts);
+  const loading = useSelector(state => state.contacts.loading);
+  const error = useSelector(state => state.contacts.error);
 
-  const filteredContacts = contacts.filter(contact =>
-    contact.name.toLowerCase().includes(filter)
-  );
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
 
   return (
-    <ul className="list-con">
-      {filteredContacts.map(contact => (
-        <Contact key={contact.id} contact={contact} />
-      ))}
-    </ul>
+    <>
+      {loading && <p>Loading...</p>}
+      {error && <p>{error}</p>}
+      <ul className="list-con">
+        {contacts.map(({ id, name, number }) => (
+          <li className="contact-card" key={id}>
+            {name}: {number}
+            <button className='con-btn' onClick={() => dispatch(deleteContact(id))}>Delete</button>
+          </li>
+        ))}
+      </ul>
+    </>
   );
 };
 
