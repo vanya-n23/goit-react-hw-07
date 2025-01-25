@@ -18,7 +18,7 @@ const ContactForm = () => {
     .max(50, "Must be 50 letters or less")
     .required("Name is required"),
   number: Yup.string()
-    .matches(/^\d{3}-\d{2}-\d{2}$/, "Number must be in format XXX-XX-XX")
+    .matches(/^\d{3}-\d{3}-\d{4}$/, "Number must be in format XXX-XXX-XXXX")
     .required("Number is required"),
     }),
     onSubmit: (values, { resetForm }) => {
