@@ -13,8 +13,13 @@ const ContactForm = () => {
       number: '',
     },
     validationSchema: Yup.object({
-      name: Yup.string().required('Required'),
-      number: Yup.string().matches(/^\d+$/, 'Invalid phone number').required('Required'),
+           name: Yup.string()
+    .min(3, "Must be at least 3 letters")
+    .max(50, "Must be 50 letters or less")
+    .required("Name is required"),
+  number: Yup.string()
+    .matches(/^\d{3}-\d{2}-\d{2}$/, "Number must be in format XXX-XX-XX")
+    .required("Number is required"),
     }),
     onSubmit: (values, { resetForm }) => {
       dispatch(addContact(values));
